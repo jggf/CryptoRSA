@@ -41,4 +41,31 @@ public class Main {
 
         System.out.println("TK encriptada: " + encryptedTkHex);
     }
+
+    public static void metodAux(String publicKeyHex) throws Exception {
+
+        // La clave pública RSA en formato ASN.1 DER en hexadecimal
+        publicKeyHex = publicKeyHex.replaceAll("[^0-9A-Fa-f]", "");
+
+        // Convertir la clave pública en un objeto PublicKey de Java
+        byte[] publicKeyBytes = Hex.decodeHex(publicKeyHex);
+        X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
+
+        // TK en hexadecimal que queremos cifrar
+        String tkHex = "1234567890abcdef1234567890abcdef";
+
+        // Convertir el TK en bytes
+        byte[] tkBytes = Hex.decodeHex(tkHex);
+
+        // Cifrar el TK con la clave pública RSA
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        byte[] encryptedTkBytes = cipher.doFinal(tkBytes);
+
+        // Convertir el TK cifrado en hexadecimal
+        String encryptedTkHex = Hex.encodeHexString(encryptedTkBytes);
+        System.out.println("TK cifrado: " + encryptedTkHex);
+    }
 }
