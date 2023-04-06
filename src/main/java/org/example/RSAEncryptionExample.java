@@ -22,6 +22,7 @@ public class RSAEncryptionExample {
 
         // TK en hexadecimal que queremos cifrar
         final String tkHex = "0123456789ABCDEF0123456789ABCDEF";
+        System.out.println("Antes de encriptar : " + tkHex);
         // Convertir el TK en bytes
         byte[] tkBytes = Hex.decodeHex(tkHex);
 
@@ -37,7 +38,7 @@ public class RSAEncryptionExample {
         byte[] decryptedTkBytes = cipher.doFinal(encryptedTkBytes);
         String decryptedTkHex = Hex.encodeHexString(decryptedTkBytes);
         System.out.println("TK desencriptada: " + decryptedTkHex);
-
+        System.out.println(tkHex.equalsIgnoreCase(decryptedTkHex) ? "Clave coincide" : "Error en desincriptar");
         // Verificar que la clave TK original y la desencriptada sean iguales
         if (Arrays.equals(tkBytes, decryptedTkBytes)) {
             System.out.println("La clave TK original y la desencriptada son iguales");
