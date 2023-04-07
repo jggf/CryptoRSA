@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e1773516-30ec-4d52-b3b8-73f1deda9575" name="Changes" comment="ENC_AND_DEC se agrego dos test con distintos metodos para porder enciptar y desincriptar las llaves.">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/CheckValue.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Desincrypt.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Encrypt.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Main.java" afterDir="false" />
-    </list>
+    <list default="true" id="e1773516-30ec-4d52-b3b8-73f1deda9575" name="Changes" comment="ENC_AND_DEC se agrego dos test con distintos metodos para porder enciptar y desincriptar las llaves." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -98,7 +92,14 @@
       <option name="project" value="LOCAL" />
       <updated>1680755404825</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="ENC_AND_DEC se agrego dos test con distintos metodos para porder enciptar y desincriptar las llaves.">
+      <created>1680840022520</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1680840022520</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
