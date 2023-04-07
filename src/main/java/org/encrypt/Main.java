@@ -1,4 +1,4 @@
-package org.example;
+package org.encrypt;
 
 import java.nio.charset.StandardCharsets;
 

@@ -1,4 +1,4 @@
-package org.example;
+package org.encrypt;
 
 import javax.xml.bind.DatatypeConverter;
 import java.security.KeyPair;

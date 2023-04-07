@@ -1,4 +1,4 @@
-package org.example;
+package org.encrypt;
 
 import org.apache.commons.codec.binary.Hex;
 
