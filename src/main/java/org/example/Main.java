@@ -12,7 +12,7 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            crearLlaves();
+            GenerateKey.crearLlaves();
             System.out.println("ENC MODULE AND EXPONENT : ");
             try {
                 String tkEn = Encrypt.enc("818b97dccbdc6cc9baea9ccde9ed81035264b190d89844ae60dd16fec14451d27b0f3807867d6812bc2ebe1f23b53f54d021d48df8d27be6c932129c3cb9613912235ef3d7f697b2d6e8de5a30e221b1c19d927ea566b9700ba392dbdd4dca1997dd5009d0634ea0813428432bbfbb5c9e025ed8a6083971eadb7ad4a5de2d7d75f0f2199f5f4b63e5e1d5b436fea51ba32791473073b0a1428938a8305fb956e40719ed7d3a8f02e095a51a9bec37aad3655e099e99fc49067ae381e7a02db90424160712bd5d191d8c229cec939aa1878c35fc1a996d47c62791fb83ab7ab6e4fde992669b510d861342b067ddf5801dbb948779c45c3f441e2183334ba005010001".toUpperCase());
@@ -34,35 +34,6 @@ public class Main {
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    public static void crearLlaves() {
-        try {
-            KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-            kpg.initialize(2048);
-            KeyPair kp = kpg.genKeyPair();
-            RSAPrivateKey privateKey = (RSAPrivateKey) kp.getPrivate();
-            RSAPublicKey publicKey = (RSAPublicKey) kp.getPublic();
-
-            byte[] privateKeyBytes = privateKey.getEncoded();
-
-            byte[] publicKeyBytes = publicKey.getEncoded();
-
-            // Convertir a formato hexadecimal
-
-            // Imprimir resultados
-            System.out.println("Private Key:");
-            System.out.println(DatatypeConverter.printHexBinary(privateKeyBytes));
-
-
-            System.out.println("Public Key:");
-            System.out.println(DatatypeConverter.printHexBinary(publicKeyBytes));
-            System.out.println(publicKey.getModulus().toString(16));
-            System.out.println(DatatypeConverter.printHexBinary(publicKey.getPublicExponent().toByteArray()));
-
-        } catch (NoSuchAlgorithmException e) {
-            System.out.println("Error: " + e.getMessage());
         }
     }
 
