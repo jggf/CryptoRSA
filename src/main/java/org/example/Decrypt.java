@@ -7,7 +7,7 @@ import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 
-public class Desincrypt {
+public class Decrypt {
 
     public static void des(String privateKeyHex, String encryptedTkHex) throws Exception {
         // Convertir la clave privada RSA en formato ASN.1 DER de 2048 bits a objeto PrivateKey
