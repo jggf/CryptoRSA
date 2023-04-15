@@ -1,9 +1,4 @@
 package org.dukpt;
-
-import java.math.BigInteger;
-import java.security.InvalidParameterException;
-import java.util.Arrays;
-
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -11,6 +6,9 @@ import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.DESedeKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.math.BigInteger;
+import java.security.InvalidParameterException;
+import java.util.Arrays;
 
 /**
  * <p>The Dukpt class acts a name-space for the Derived
@@ -67,9 +65,11 @@ public final class Dukpt {
     * @throws Exception
     */
    public static byte[] computeKey(byte[] baseDerivationKey, byte[] keySerialNumber) throws Exception {
-      return computeKey(baseDerivationKey, keySerialNumber, DEFAULT_KEY_REGISTER_BITMASK, DEFAULT_VARIANT_BITMASK);
-   }
+      BitSet bitSetKSN = Dukpt.toBitSet(Dukpt.toByteArray(Dukpt.KEY_REGISTER_BITMASK));
+      BitSet bitSetBDK = Dukpt.toBitSet(Dukpt.toByteArray(Dukpt.DATA_VARIANT_BITMASK));
 
+      return computeKey(baseDerivationKey, keySerialNumber, bitSetKSN, bitSetBDK);
+   }
    /**
     * <p>Computes a DUKPT (Derived Unique Key-Per-Transaction) using the provided key register bitmask and data variant
     * bitmask.</p>
@@ -88,8 +88,14 @@ public final class Dukpt {
       BitSet ipek = getIpek(bdk, ksn, keyRegisterBitmask);
 
       // convert key for returning
-      BitSet key = getCurrentKey(ipek, ksn, keyRegisterBitmask, dataVariantBitmask);
+      BitSet key = _getCurrentKey(ipek, ksn, keyRegisterBitmask, dataVariantBitmask);
       byte[] rkey = toByteArray(key);
+
+      // secure memory
+      obliviate(ksn);
+      obliviate(bdk);
+      obliviate(ipek);
+      obliviate(key);
 
       return rkey;
    }
@@ -144,6 +150,13 @@ public final class Dukpt {
       byte[] bipek = concat(ipek[0], ipek[1]);
       BitSet bsipek = toBitSet(bipek);
 
+      // secure memory
+      obliviate(ipek[0]);
+      obliviate(ipek[1]);
+      obliviate(bipek);
+      obliviate(keyRegister);
+      obliviate(data);
+
       return bsipek;
    }
 
@@ -175,7 +188,7 @@ public final class Dukpt {
     * @return The Dukpt that corresponds to this combination of values.
     * @throws Exception
     */
-   private static BitSet getCurrentKey(BitSet ipek, BitSet ksn, BitSet keyRegisterBitmask, BitSet dataVariantBitmask) throws Exception {
+   private static BitSet _getCurrentKey(BitSet ipek, BitSet ksn, BitSet keyRegisterBitmask, BitSet dataVariantBitmask) throws Exception {
       BitSet key = ipek.get(0, ipek.bitSize());
       BitSet counter = ksn.get(0, ksn.bitSize());
       counter.clear(59, ksn.bitSize());
@@ -185,11 +198,14 @@ public final class Dukpt {
             counter.set(i);
             BitSet tmp = _nonReversibleKeyGenerationProcess(key, counter.get(16, 80), keyRegisterBitmask);
             // secure memory
+            obliviate(key);
             key = tmp;
          }
       }
       key.xor(dataVariantBitmask); // data encryption variant (e.g. To PIN)
 
+      // secure memory
+      obliviate(counter);
 
       return key;
    }
@@ -231,6 +247,14 @@ public final class Dukpt {
       byte[] reg1b = toByteArray(reg1), reg2b = toByteArray(reg2);
       byte[] key = concat(reg1b, reg2b);
       BitSet rkey = toBitSet(key);
+
+      // secure memory
+      obliviate(reg1);
+      obliviate(reg2);
+      obliviate(reg1b);
+      obliviate(reg2b);
+      obliviate(key);
+      obliviate(keyreg);
 
       return rkey;
    }
@@ -326,6 +350,10 @@ public final class Dukpt {
       byte[] rightEncrypted = Dukpt.encryptTripleDes(derivedKey, right);
       byte[] dataKey = Dukpt.concat(leftEncrypted, rightEncrypted);
 
+      Dukpt.obliviate(left);
+      Dukpt.obliviate(right);
+      Dukpt.obliviate(leftEncrypted);
+      Dukpt.obliviate(rightEncrypted);
 
       return dataKey;
    }
@@ -422,6 +450,17 @@ public final class Dukpt {
       encryptor.init(Cipher.ENCRYPT_MODE, encryptKey, iv);
       byte[] bytes = encryptor.doFinal(data);
 
+      // secure memory
+      obliviate(k1);
+      obliviate(k2);
+      obliviate(k3);
+      obliviate(kb1);
+      obliviate(kb2);
+      obliviate(kb3);
+      obliviate(key16);
+      obliviate(key24);
+      obliviate(bskey);
+
       return bytes;
    }
 
@@ -469,6 +508,17 @@ public final class Dukpt {
          decryptor = Cipher.getInstance("DESede/CBC/NoPadding");
       decryptor.init(Cipher.DECRYPT_MODE, encryptKey, iv);
       byte[] bytes = decryptor.doFinal(data);
+
+      // secure memory
+      obliviate(k1);
+      obliviate(k2);
+      obliviate(k3);
+      obliviate(kb1);
+      obliviate(kb2);
+      obliviate(kb3);
+      obliviate(key16);
+      obliviate(key24);
+      obliviate(bskey);
 
       return bytes;
    }
@@ -672,4 +722,45 @@ public final class Dukpt {
       }
       return c;
    }
+   /**
+    * <p>Overwrites the extended BitSet NUM_OVERWRITES times with random data for security purposes.
+    */
+   public static void obliviate(BitSet b) {
+      obliviate(b, NUM_OVERWRITES);
+   }
+
+   /**
+    * <p>Overwrites the byte array NUM_OVERWRITES times with random data for security purposes.
+    */
+   public static void obliviate(byte[] b) {
+      obliviate(b, NUM_OVERWRITES);
+   }
+
+   /**
+    * <p>Overwrites the extended BitSet with random data for security purposes.
+    */
+   public static void obliviate(BitSet b, int n) {
+      java.security.SecureRandom r = new java.security.SecureRandom();
+      for (int i=0; i<NUM_OVERWRITES; i++) {
+         for (int j = 0; j<b.bitSize(); j++) {
+            b.set(j, r.nextBoolean());
+         }
+      }
+   }
+
+   /**
+    * <p>Overwrites the byte array with random data for security purposes.
+    */
+   public static void obliviate(byte[] b, int n) {
+      for (int i=0; i<n; i++) {
+         b[i] = 0x00;
+         b[i] = 0x01;
+      }
+
+      java.security.SecureRandom r = new java.security.SecureRandom();
+      for (int i=0; i<n; i++) {
+         r.nextBytes(b);
+      }
+   }
+
 }
