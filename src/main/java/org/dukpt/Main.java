@@ -2,9 +2,11 @@ package org.dukpt;
 
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
+import java.security.Provider;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -32,7 +34,19 @@ import org.bouncycastle.util.encoders.Hex;
 public class Main {
 
    private static final String input =
-         "5413330002001171D141220106464048FFFFFF654FFFFFFF42353137373132363233373031343539315E434C49454E54452F454C202020202020202020202020202020205E31343031313031303030303030303030303030303030373031303030303030FFFFFFFF";
+                         "5413330002001171" +
+                         "D141220106464048" +
+                         "FFFFFF654FFFFFFF" +
+                         "4235313737313236" +
+                         "3233373031343539" +
+                         "315E434C49454E54" +
+                         "452F454C20202020" +
+                         "2020202020202020" +
+                         "202020205E313430" +
+                         "3131303130303030" +
+                         "3030303030303030" +
+                         "3030303730313030" +
+                         "30303030FFFFFFFF";
 
    private static final String KEY_ENCRYPTED = "00112233445566778899AABBCCDDEEFF";
 
@@ -46,35 +60,44 @@ public class Main {
       return StringUtils.leftPad(hexaValue.toString(16), 20, "0").toUpperCase();
    }
 
+
+   public static void main2(String[] args) {
+
+      Security.addProvider(new BouncyCastleProvider());
+      Provider providers = Security.getProvider("BC");
+
+      Iterator it = providers.keySet().iterator();
+
+       while (it.hasNext()) {
+
+
+          String entry = (String)it.next();
+
+          System.out.println(StringUtils.remove(entry, "lg.Alias."));
+
+       }
+
+   }
+
+
    public static void main(String[] args) {
 
-      String blocks = "5413330002001171";
-      //String[] blocks = getBlocks();
-      System.out.println("KSN");
-      System.out.println(KSN);
-      System.out.println("BDK");
-      System.out.println(KEY_ENCRYPTED);
-      System.out.println("Antes de encriptar");
-      System.out.println(blocks);
-
-      final byte[] ksn = Hex.decode(KSN);
-
-      final byte[] bdk = Hex.decode(KEY_ENCRYPTED);
-
       try {
+         final String blocks = input;//"5413330002001171";
+         //final String[] blocks = getBlocks();
+         final byte[] ksn = Hex.decode(KSN);
+         final byte[] bdk = Hex.decode(KEY_ENCRYPTED);
          byte[] derivedKey = Dukpt.computeKey(bdk, ksn);
          byte[] sessionKey = Dukpt.toDataKey(derivedKey);
-
-         System.out.println("Llave diversificada");
-         System.out.println(Hex.toHexString(sessionKey));
-
-         System.out.println("Despues de encriptar");
          final String sf10 = encryptTracks(sessionKey, blocks);
+         byte[] decryptedPayload = Dukpt.decryptTripleDes(sessionKey, Dukpt.toByteArray(sf10.substring(0, 48)));
 
-         System.out.println(sf10);
-         System.out.println("Despues de desencriptar");
-         byte[] decryptedPayload = Dukpt.decryptTripleDes(sessionKey, Dukpt.toByteArray(sf10));
-         System.out.println(Dukpt.toHex(decryptedPayload));
+         System.out.println(StringUtils.rightPad("KSN", 30)+ " : " + KSN);
+         System.out.println(StringUtils.rightPad("BDK", 30)+ " : " + KEY_ENCRYPTED);
+         System.out.println(StringUtils.rightPad("Texto", 30)+ " : " + blocks);
+         System.out.println(StringUtils.rightPad("Llave diversificada", 30)+ " : " + Hex.toHexString(sessionKey).toUpperCase());
+         System.out.println(StringUtils.rightPad("Texto encriptado", 30)+ " : " + sf10);
+         System.out.println(StringUtils.rightPad("Texto desencriptado", 30)+ " : " + Dukpt.toHex(decryptedPayload) );
 
       } catch (Exception e) {
          e.printStackTrace();

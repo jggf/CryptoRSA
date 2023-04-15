@@ -17,9 +17,7 @@ public final class Dukpt {
    private static final BitSet DEFAULT_KEY_REGISTER_BITMASK = toBitSet(toByteArray(KEY_REGISTER_BITMASK));
 
    public static final String DATA_VARIANT_BITMASK = "0000000000FF00000000000000FF0000";
-   public static final String MAC_VARIANT_BITMASK  = "000000000000FF00000000000000FF00";
    public static final String PIN_VARIANT_BITMASK  = "00000000000000FF00000000000000FF";
-   private static final BitSet DEFAULT_VARIANT_BITMASK = toBitSet(toByteArray(PIN_VARIANT_BITMASK));
 
    public static byte[] computeKey(byte[] baseDerivationKey, byte[] keySerialNumber) throws Exception {
       BitSet bitSetKSN = Dukpt.toBitSet(Dukpt.toByteArray(Dukpt.KEY_REGISTER_BITMASK));
